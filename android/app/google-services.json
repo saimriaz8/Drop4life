@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "937978995777",
+    "project_id": "drop4life-19d7b",
+    "storage_bucket": "drop4life-19d7b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937978995777:android:24d0e36ee43020cd1412c0",
+        "android_client_info": {
+          "package_name": "com.example.drop4life"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937978995777-vk17g51sb78ao60gosjkuld4bl8nlljg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.drop4life",
+            "certificate_hash": "a8a153771295e04bc9bf6ec2c55ce263120cd401"
+          }
+        },
+        {
+          "client_id": "937978995777-ffae1muofpbpq9efruel0kql63rqtl90.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgT88-ApByHhXrRUZJg0qVr4Bbf8KRBiU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937978995777-ffae1muofpbpq9efruel0kql63rqtl90.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
