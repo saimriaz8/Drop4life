@@ -1,6 +1,7 @@
 import 'package:drop4life/core/appcolors/app_colors.dart';
+import 'package:drop4life/core/appproviders/riverpod_providers.dart';
 import 'package:drop4life/features/home/model/blood_request.dart';
-import 'package:drop4life/features/requestdetails/logic/google_map_widget.dart';
+import 'package:drop4life/features/requestdetails/presentation/widgets/google_map_widget.dart';
 import 'package:drop4life/features/requestdetails/logic/request_detail_page_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class RequestDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    User? user = record.$1;
     Map<String, dynamic> data = record.$2;
     BloodRequest request = record.$3;
     var size = MediaQuery.sizeOf(context);
@@ -38,7 +40,7 @@ class RequestDetailPage extends ConsumerWidget {
                 alignment: Alignment.topCenter,
                 child: SizedBox(
                   width: width,
-                  height: height * 0.6,
+                  height: height * 0.575,
                   child: GoogleMapWidget(bloodRequest: request),
                 ),
               ),
@@ -135,6 +137,8 @@ class RequestDetailPage extends ConsumerWidget {
                                       context: context,
                                       request: request,
                                       donorData: data,
+                                      user: user,
+                                      profilePageStateNotifier: ref.read(profilePageProvider.notifier),
                                     ),
                             icon: Icon(Icons.favorite),
                             label: Text("I Want to Donate"),

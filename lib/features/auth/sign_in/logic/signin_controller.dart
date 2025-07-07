@@ -88,6 +88,7 @@ class SignInController {
         context,
       ).showSnackBar(SnackBar(content: Text('Login successfully')));
       var record = (user, userData);
+      FocusScope.of(context).unfocus();
       GoRouter.of(context).go(BottomNavigationPage.pageName, extra: record);
     } on FirebaseAuthException catch (e) {
       // Firebase login-specific errors

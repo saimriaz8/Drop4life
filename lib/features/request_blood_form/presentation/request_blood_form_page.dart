@@ -106,17 +106,20 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
     bloodGroupAnimationController.dispose();
     cityAnimationController.dispose();
     addressAnimationController.dispose();
+
+    fullNameTextFieldController.dispose();
+    phoneTextFieldController.dispose();
+    unitsNeededTextFieldController.dispose();
+    addressTextFieldController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.sizeOf(context);
     final Size(:width, :height) = size;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Theme.of(context).brightness == Brightness.dark ? AppColors.textLight : AppColors.textDark,
-      ),
-      child: SafeArea(
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
           resizeToAvoidBottomInset: false, // Prevent UI shift on keyboard
           body: Stack(
@@ -130,7 +133,7 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
                   color: AppColors.primaryColor,
                 ),
               ),
-        
+
               Positioned(
                 top: 10,
                 left: 10,
@@ -150,7 +153,7 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
                           ),
                         ),
                       ),
-        
+
                       // FittedBox(
                       //   child: Text(
                       //     'When you need a hero, just ask.',
@@ -165,7 +168,7 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
                   ),
                 ),
               ),
-        
+
               /// Expanded scrollable area
               Positioned(
                 top: 100,
@@ -173,13 +176,13 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
                 right: 30,
                 child: SingleChildScrollView(
                   reverse: false,
-        
+
                   child: Column(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(20),
                         width: width * 0.9,
-        
+
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           color: Theme.of(context).scaffoldBackgroundColor,
@@ -219,7 +222,8 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
                               RequestBloodFormUnitsNeededFieldWidget(
                                 controller: unitsNeededTextFieldController,
                                 animation: unitsNeededAnimation,
-                                animationController: unitsNeededAnimationController,
+                                animationController:
+                                    unitsNeededAnimationController,
                                 height: height,
                                 width: width,
                               ),
@@ -236,7 +240,8 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
                                 animation: bloodGroupAnimation,
                                 height: height,
                                 width: width,
-                                animationController: bloodGroupAnimationController,
+                                animationController:
+                                    bloodGroupAnimationController,
                               ),
                               const SizedBox(height: 20),
                               RequestBloodFormCityDropdownFieldWidget(
@@ -252,6 +257,7 @@ class _RequestBloodFormPageState extends State<RequestBloodFormPage>
                                 nameController: fullNameTextFieldController,
                                 unitsController: unitsNeededTextFieldController,
                                 addressController: addressTextFieldController,
+                                record: widget.record,
                               ),
                               const SizedBox(height: 20),
                             ],

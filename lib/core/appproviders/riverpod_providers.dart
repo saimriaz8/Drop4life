@@ -7,6 +7,8 @@ import 'package:drop4life/features/aichat/logic/ai_chat_page_state.dart';
 import 'package:drop4life/features/aichat/logic/ai_chat_page_state_notifier.dart';
 import 'package:drop4life/features/home/logic/home_page_state.dart';
 import 'package:drop4life/features/home/logic/home_page_state_notifier.dart';
+import 'package:drop4life/features/profile/logic/profile_page_state.dart';
+import 'package:drop4life/features/profile/logic/profile_page_state_notifier.dart';
 import 'package:drop4life/features/request_blood_form/logic/request_blood_form_state.dart';
 import 'package:drop4life/features/request_blood_form/logic/request_blood_form_state_notifier.dart';
 import 'package:drop4life/features/requestdetails/logic/request_detail_page_state_notifier.dart';
@@ -44,9 +46,14 @@ final homePageProvider =
       return HomePageStateNotifier();
     });
 
-    final requestDetailPageProvider =
-    StateNotifierProvider<RequestDetailPageStateNotifier, RequestDetailsPageState>((ref) {
-      return RequestDetailPageStateNotifier();
+final requestDetailPageProvider = StateNotifierProvider<
+  RequestDetailPageStateNotifier,
+  RequestDetailsPageState
+>((ref) {
+  return RequestDetailPageStateNotifier();
+});
+
+final profilePageProvider =
+    StateNotifierProvider<ProfilePageStateNotifier, ProfilePageState>((ref) {
+      return ProfilePageStateNotifier();
     });
-
-

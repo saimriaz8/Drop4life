@@ -12,4 +12,8 @@ class AiChatPageStateNotifier extends StateNotifier<AiChatPageState> {
     List<Map<String, String>> chatsList = [...state.chatHistory, latestChat];
     state = state.copyWith(chatHistory: chatsList);
   }
+
+  void resetChat() {
+    state = state.copyWith(chatHistory: []);
+  }
 }

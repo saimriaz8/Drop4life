@@ -35,6 +35,7 @@ class SignInButton extends ConsumerWidget {
             ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
+          overlayColor: Color.fromRGBO(255, 255, 255, 0.2),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         ),
         child:

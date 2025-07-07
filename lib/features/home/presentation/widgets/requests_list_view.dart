@@ -57,7 +57,7 @@ class RequestsListView extends ConsumerWidget {
                   requestLongitude,
                 );
 
-                return distanceInMeters <= radiusInKm * 1000;
+                return distanceInMeters <= radiusInKm * 1000 && request.fullName.toLowerCase() != data['name'].toString().toLowerCase();
               }).toList();
 
           return nearbyRequests.isEmpty

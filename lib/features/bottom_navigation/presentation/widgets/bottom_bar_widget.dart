@@ -11,19 +11,25 @@ class BottomBarWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(bottomNavigationRiverpdProvider);
-    final bottomNavigationStateNotifier = ref.read(bottomNavigationRiverpdProvider.notifier);
+    final bottomNavigationStateNotifier = ref.read(
+      bottomNavigationRiverpdProvider.notifier,
+    );
     return SalomonBottomBar(
       currentIndex: currentIndex,
-      onTap: bottomNavigationStateNotifier.onPressedNavItem,
+      onTap: (i) {
+        bottomNavigationStateNotifier.onPressedNavItem(i);
+        FocusScope.of(context).unfocus();
+      },
       items: [
         /// Home
         SalomonBottomBarItem(
           icon: Icon(Icons.home),
           title: Text("Home"),
           selectedColor: Colors.red.shade700, // active tab
-          unselectedColor: Theme.of(context).brightness == Brightness.light
-                        ? AppColors.textDark
-                        : AppColors.textLight,
+          unselectedColor:
+              Theme.of(context).brightness == Brightness.light
+                  ? AppColors.textDark
+                  : AppColors.textLight,
         ),
 
         /// Likes
@@ -31,9 +37,10 @@ class BottomBarWidget extends ConsumerWidget {
           icon: Icon(FontAwesomeIcons.commentDots),
           title: Text("Ai Chat"),
           selectedColor: Colors.red.shade700, // active tab
-          unselectedColor: Theme.of(context).brightness == Brightness.light
-                        ? AppColors.textDark
-                        : AppColors.textLight,
+          unselectedColor:
+              Theme.of(context).brightness == Brightness.light
+                  ? AppColors.textDark
+                  : AppColors.textLight,
         ),
 
         /// Search
@@ -41,9 +48,10 @@ class BottomBarWidget extends ConsumerWidget {
           icon: Icon(Icons.person),
           title: Text("Profile"),
           selectedColor: Colors.red.shade700, // active tab
-          unselectedColor: Theme.of(context).brightness == Brightness.light
-                        ? AppColors.textDark
-                        : AppColors.textLight,
+          unselectedColor:
+              Theme.of(context).brightness == Brightness.light
+                  ? AppColors.textDark
+                  : AppColors.textLight,
         ),
       ],
     );

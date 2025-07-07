@@ -1,3 +1,4 @@
+import 'package:drop4life/core/appcolors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SignInFormState {
@@ -12,10 +13,10 @@ class SignInFormState {
   final bool isPasswordVisible;
 
   const SignInFormState({
-    this.textFieldEmailColorDark = Colors.black,
-    this.textFieldPasswordColorDark = Colors.black,
-    this.textFieldEmailColorLight = Colors.black,
-    this.textFieldPasswordColorLight = Colors.black,
+    this.textFieldEmailColorDark = AppColors.textDark,
+    this.textFieldPasswordColorDark = AppColors.textDark,
+    this.textFieldEmailColorLight = AppColors.textLight,
+    this.textFieldPasswordColorLight = AppColors.textLight,
     this.isLoading = false,
     this.isGoogleLoading = false,
     this.email = 'Email',

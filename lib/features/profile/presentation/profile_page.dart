@@ -1,21 +1,39 @@
 import 'package:drop4life/core/appcolors/app_colors.dart';
+import 'package:drop4life/core/appproviders/riverpod_providers.dart';
 import 'package:drop4life/core/imports/all_imports.dart';
 import 'package:drop4life/features/profile/logic/profile_page_controller.dart';
 import 'package:drop4life/features/request_blood_form/presentation/request_blood_form_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   final (User?, Map<String, dynamic>) record;
   const ProfilePage({super.key, required this.record});
 
   @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  late Map<String, dynamic> data;
+  @override
+  void initState() {
+    super.initState();
+    data = widget.record.$2;
+
+    Future.microtask(() {
+      final profilePageStateNotifier = ref.read(profilePageProvider.notifier);
+      profilePageStateNotifier.setDonationCount(data['donationCount'] ?? 0);
+      profilePageStateNotifier.setRequestCount(data['requestCount'] ?? 0);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profilePageState = ref.watch(profilePageProvider);
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
-
-    var data = record.$2;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -29,8 +47,7 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               children: [
                 CircleAvatar(
-                  backgroundColor:
-                      Theme.of(context).scaffoldBackgroundColor,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   radius: width * 0.13,
                   backgroundImage: AssetImage(
                     "assets/images/user_img.png", // Replace with real image
@@ -56,7 +73,7 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
           ),
-        
+
           // Buttons
           Padding(
             padding: EdgeInsets.symmetric(
@@ -83,7 +100,7 @@ class ProfilePage extends StatelessWidget {
                     onPressed:
                         () => GoRouter.of(context).push(
                           RequestBloodFormPage.pageName,
-                          extra: record,
+                          extra: widget.record,
                         ),
                     icon: Icon(
                       Icons.send,
@@ -106,7 +123,7 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
           ),
-        
+
           // Info Row
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.1),
@@ -114,14 +131,22 @@ class ProfilePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _infoTile(data['bloodgroup'] ?? "A+", "Blood Type", width),
-                _infoTile("04", "Donated", width),
-                _infoTile("03", "Requested", width),
+                _infoTile(
+                  profilePageState.donateCount.toString(),
+                  "Donated",
+                  width,
+                ),
+                _infoTile(
+                  profilePageState.requestCount.toString(),
+                  "Requested",
+                  width,
+                ),
               ],
             ),
           ),
-        
+
           SizedBox(height: height * 0.03),
-        
+
           // Options
           Expanded(
             child: ListView(
@@ -129,8 +154,14 @@ class ProfilePage extends StatelessWidget {
               children: [
                 SwitchListTile(
                   title: Text("Available for donate"),
-                  value: true,
-                  onChanged: (_) {},
+                  value: profilePageState.isAvailbaleForDonate,
+                  onChanged: (_) {
+                    ref
+                        .read(profilePageProvider.notifier)
+                        .setAvailableForDonate(
+                          value: !profilePageState.isAvailbaleForDonate,
+                        );
+                  },
                   activeColor: AppColors.primaryColor,
                 ),
                 ListTile(
@@ -144,10 +175,7 @@ class ProfilePage extends StatelessWidget {
                   onTap: () {},
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.logout,
-                    color: AppColors.primaryColor,
-                  ),
+                  leading: Icon(Icons.logout, color: AppColors.primaryColor),
                   title: Text(
                     "Log out",
                     style: TextStyle(color: AppColors.primaryColor),
@@ -168,9 +196,7 @@ class ProfilePage extends StatelessWidget {
                                 SizedBox(width: 8),
                                 Text(
                                   'Log Out?',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -181,8 +207,15 @@ class ProfilePage extends StatelessWidget {
                             actionsAlignment: MainAxisAlignment.end,
                             actions: [
                               TextButton(
-                                onPressed:
-                                    () => Navigator.of(context).pop(),
+                                onPressed: () => Navigator.of(context).pop(),
+                                style: ButtonStyle(
+                                  overlayColor: WidgetStatePropertyAll(
+                                    Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.textDark
+                                        : AppColors.textLight,
+                                  ),
+                                ),
                                 child: Text(
                                   'Stay Logged In',
                                   style: TextStyle(
@@ -196,11 +229,20 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ),
                               TextButton(
-                                onPressed:
-                                    () =>
-                                        ProfilePageController.signOutFromGoogle(
-                                          context,
-                                        ),
+                                onPressed: () {
+                                  ProfilePageController.signOutFromGoogle(
+                                    context,
+                                  );
+                                  ref
+                                      .read(
+                                        bottomNavigationRiverpdProvider
+                                            .notifier,
+                                      )
+                                      .onPressedNavItem(0);
+                                  ref
+                                      .read(aiChatPageProvider.notifier)
+                                      .resetChat();
+                                },
                                 child: Text(
                                   'Log Out',
                                   style: TextStyle(

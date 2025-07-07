@@ -106,6 +106,7 @@ class SignupController {
         context,
       ).showSnackBar(SnackBar(content: Text('User registered successfully!')));
       var record = (userCredential.user, userData);
+      FocusScope.of(context).unfocus();
       GoRouter.of(context).go(BottomNavigationPage.pageName, extra: record);
     } on FirebaseAuthException catch (e) {
       if (context.mounted) {

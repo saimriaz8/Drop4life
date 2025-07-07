@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drop4life/core/appproviders/riverpod_providers.dart';
 import 'package:drop4life/core/imports/all_imports.dart';
+import 'package:drop4life/features/bottom_navigation/presentation/bottom_navigation_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -144,7 +146,10 @@ class RequestBloodFormController {
     String? city,
     required BuildContext context,
     required WidgetRef ref,
+    required (User? user, Map<String, dynamic> data) record,
   }) async {
+    FocusScope.of(context).unfocus();
+    final user = record.$1;
     if (formKey.currentState?.validate() ?? false) {
       final fullAddress = '$address, $city';
       var requestBloodFormNotifier = ref.read(
@@ -168,9 +173,48 @@ class RequestBloodFormController {
           'timestamp': DateTime.now().toIso8601String(),
         });
 
+        if (user != null) {
+          final uId = user.uid;
+          final userDoc = FirebaseFirestore.instance
+              .collection('users')
+              .doc(uId);
+          final snapshot = await userDoc.get();
+
+          if (!snapshot.exists) {
+            await userDoc.set({
+              'email': user.email,
+              'name': user.displayName ?? '',
+              'requestCount': 0,
+              'donationCount': 0,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+          }
+          await FirebaseFirestore.instance.collection('users').doc(uId).update({
+            'requestCount': FieldValue.increment(1),
+          });
+
+          final doc =
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(uId)
+                  .get();
+          if (doc.exists) {
+            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+            final profilePageStateNotifier = ref.read(
+              profilePageProvider.notifier,
+            );
+            profilePageStateNotifier.setDonationCount(
+              data['donationCount'] ?? 0,
+            );
+            profilePageStateNotifier.setRequestCount(data['requestCount'] ?? 0);
+            debugPrint(data.toString());
+          }
+        }
+        await Future.delayed(Duration(milliseconds: 200));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Request submitted successfully.')),
         );
+        GoRouter.of(context).go(BottomNavigationPage.pageName, extra: record);
       } catch (e) {
         print('Error submitting request: $e');
       } finally {
@@ -180,7 +224,8 @@ class RequestBloodFormController {
   }
 
   static Future<String> getUserNameFromFirestore(String uid) async {
-  final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-  return doc.data()?['name'] ?? '';
-}
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    return doc.data()?['name'] ?? '';
+  }
 }

@@ -49,7 +49,7 @@ class SignUpPasswordFieldWidget extends ConsumerWidget {
       obscurePasswordButton: IconButton(
         onPressed: () => ref.read(signUpFormRiverpodProvider.notifier).setPasswordVisibility(!isPasswordVisible),
         icon: Icon(
-          isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+          isPasswordVisible ? Icons.visibility_off : Icons.visibility,
           color:
               Theme.of(context).brightness == Brightness.light
                   ? AppColors.textDark

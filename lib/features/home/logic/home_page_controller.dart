@@ -6,11 +6,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HomePageController {
-    static List<String> bannerImages = [
-      'assets/images/blood_carousel_1.jpeg',
-      'assets/images/blood_carousel_2.jpeg',
-    ];
-    static Future<bool> isLocationPermissionGranted() async {
+  static List<String> bannerImages = [
+    'assets/images/blood_carousel_1.jpeg',
+    'assets/images/blood_carousel_2.jpg',
+    'assets/images/blood_carousel_3.jpeg',
+  ];
+  static Future<bool> isLocationPermissionGranted() async {
     PermissionStatus status = await Permission.location.status;
     if (status.isGranted) {
       return true;
@@ -19,14 +20,12 @@ class HomePageController {
     }
   }
 
+
   static Future<Position> getUserCurrentLocation({
     required BuildContext context,
   }) async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please on your device location')));
       Geolocator.openLocationSettings();
     }
 
@@ -62,6 +61,33 @@ class HomePageController {
     return await Geolocator.getCurrentPosition(locationSettings: settings);
   }
 
+
+
+  static Future<void> fetchAndSetUserLocation(
+    WidgetRef ref,
+    BuildContext context,
+  ) async {
+    final position = await getUserCurrentLocation(context: context);
+    final homePageStateNotifier = ref.read(homePageProvider.notifier);
+    homePageStateNotifier.setLatitude(position.latitude);
+    homePageStateNotifier.setLongitude(position.longitude);
+  }
+
+
+
+  static Future<void> checkAndFetchLocation(
+    WidgetRef ref,
+    BuildContext context,
+  ) async {
+    final isEnabled = await Geolocator.isLocationServiceEnabled();
+    if (isEnabled) {
+      await fetchAndSetUserLocation(ref, context);
+    }
+  }
+
+
+
+
   static Future<Widget> whichWidget({
     required var data,
     required var user,
@@ -82,16 +108,7 @@ class HomePageController {
             ),
             SizedBox(height: 10, width: width),
             GetStartedButton(
-              onPressed: () async {
-                Position position = await getUserCurrentLocation(
-                  context: context,
-                );
-                final homePageStateNotifier = ref.read(
-                  homePageProvider.notifier,
-                );
-                homePageStateNotifier.setLatitude(position.latitude);
-                homePageStateNotifier.setLongitude(position.longitude);
-              },
+              onPressed: () => fetchAndSetUserLocation(ref, context),
               text: 'Enable Location',
               height: height,
               width: width,
@@ -102,11 +119,3 @@ class HomePageController {
     }
   }
 }
-
-
-// onPressed: () async {
-//             Position position = await getUserCurrentLocation();
-//             final homePageStateNotifier = ref.read(homePageProvider.notifier);
-//             homePageStateNotifier.setLatitude(position.latitude);
-//             homePageStateNotifier.setLongitude(position.longitude);
-//           },

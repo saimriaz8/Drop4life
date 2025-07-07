@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drop4life/core/appcolors/app_colors.dart';
+import 'package:drop4life/core/appproviders/riverpod_providers.dart';
 import 'package:drop4life/core/imports/all_imports.dart';
 import 'package:drop4life/features/home/model/blood_request.dart';
+import 'package:drop4life/features/profile/logic/profile_page_state_notifier.dart';
 import 'package:drop4life/features/requestdetails/logic/request_detail_page_state_notifier.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,7 +19,6 @@ class RequestDetailPageController {
     LatLng start,
     LatLng end,
   ) async {
-    
     String apiKey = dotenv.env['GOOGLE_API_KEY']!;
     final url =
         'https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=$apiKey';
@@ -57,17 +60,19 @@ class RequestDetailPageController {
     required BuildContext context,
     required BloodRequest request,
     required Map<String, dynamic> donorData,
+    required User? user,
+    required ProfilePageStateNotifier profilePageStateNotifier,
   }) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('requestsblood')
-          .doc(request.id) // make sure request has an ID
-          .collection('donation_interests')
-          .add({
-            'donorName': donorData['name'],
-            'donorEmail': donorData['email'], // or actual user phone
-            'donorTime': DateTime.now().toIso8601String(),
-          });
+      // await FirebaseFirestore.instance
+      //     .collection('requestsblood')
+      //     .doc(request.id) // make sure request has an ID
+      //     .collection('donation_interests')
+      //     .add({
+      //       'donorName': donorData['name'],
+      //       'donorEmail': donorData['email'], // or actual user phone
+      //       'donorTime': DateTime.now().toIso8601String(),
+      //     });
 
       // Optionally send a notification using Firebase Cloud Functions
 
@@ -85,7 +90,7 @@ class RequestDetailPageController {
                   SizedBox(width: 8),
                   Text(
                     'Life Saved!',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                 ],
               ),
@@ -95,23 +100,68 @@ class RequestDetailPageController {
                 children: [
                   Text(
                     'Your willingness to donate has been shared.',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 17),
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'If the recipient accepts, they’ll reach out to you soon. '
-                    'Thank you for being a real-life hero. 🩸',
-                    style: TextStyle(fontSize: 14,),
+                    'The blood request has been removed and the recipient has been notified '
+                    'with your contact details. They will reach out to you directly via phone or email if they wish to proceed.\n\n'
+                    'Thank you for stepping up and being a real-life hero. 🩸',
+                    style: TextStyle(fontSize: 15),
                   ),
                 ],
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    GoRouter.of(context).pop();
+                    await FirebaseFirestore.instance
+                        .collection('requestsblood')
+                        .doc(request.id)
+                        .delete();
+                    if (user != null) {
+                      final uId = user.uid;
+                      final userDoc = FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(uId);
+                      final snapshot = await userDoc.get();
+
+                      if (!snapshot.exists) {
+                        await userDoc.set({
+                          'email': user.email,
+                          'name': user.displayName ?? '',
+                          'requestCount': 0,
+                          'donationCount': 0,
+                          'createdAt': FieldValue.serverTimestamp(),
+                        });
+                      }
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(uId)
+                          .update({'donationCount': FieldValue.increment(1)});
+                      final doc =
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(uId)
+                              .get();
+                      if (doc.exists) {
+                        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                        
+                        profilePageStateNotifier.setDonationCount(
+                          data['donationCount'] ?? 0,
+                        );
+                        profilePageStateNotifier.setRequestCount(
+                          data['requestCount'] ?? 0,
+                        );
+                      }
+                    }
+                  },
                   child: Text(
                     'Continue',
                     style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark ? AppColors.textLight : AppColors.textDark,
+                      color: AppColors.primaryColor,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

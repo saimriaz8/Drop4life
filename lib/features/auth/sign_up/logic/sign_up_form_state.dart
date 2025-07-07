@@ -1,3 +1,4 @@
+import 'package:drop4life/core/appcolors/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SignUpFormState {
@@ -21,14 +22,14 @@ class SignUpFormState {
   final String bloodFieldName;
 
   const SignUpFormState({
-    this.textFieldEmailColorDark = Colors.black,
-    this.textFieldPasswordColorDark = Colors.black,
-    this.textFieldNameColorDark = Colors.black,
-    this.textFieldBloodColorDark = Colors.black,
-    this.textFieldEmailColorLight = Colors.white,
-    this.textFieldPasswordColorLight = Colors.white,
-    this.textFieldNameColorLight = Colors.white,
-    this.textFieldBloodColorLight = Colors.white,
+    this.textFieldEmailColorDark = AppColors.textDark,
+    this.textFieldPasswordColorDark = AppColors.textDark,
+    this.textFieldNameColorDark = AppColors.textDark,
+    this.textFieldBloodColorDark = AppColors.textDark,
+    this.textFieldEmailColorLight = AppColors.textLight,
+    this.textFieldPasswordColorLight = AppColors.textLight,
+    this.textFieldNameColorLight = AppColors.textLight,
+    this.textFieldBloodColorLight = AppColors.textLight,
     this.isLoading = false,
     this.selectedBloodGroup,
     this.nameFieldName = 'Name',

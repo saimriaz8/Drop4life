@@ -19,14 +19,14 @@ class ChatBubbleWidget extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 4),
         padding: EdgeInsets.all(size.width * 0.04),
         decoration: BoxDecoration(
-          color: isUser ? Colors.redAccent : Colors.red.withOpacity(0.1),
+          color: isUser ? Colors.redAccent : Theme.of(context).brightness == Brightness.dark ? const Color(0xFFEF5350).withAlpha(100) : const Color(0xFFEF5350).withAlpha(25),
           borderRadius: BorderRadius.circular(12),
         ),
         constraints: BoxConstraints(maxWidth: size.width * 0.75),
         child: Text(
           message,
           style: TextStyle(
-            color: isUser ? Colors.white : Colors.black87,
+            color: isUser ? Colors.white : Theme.of(context).brightness == Brightness.light ? Colors.black87 : Colors.white,
             fontSize: 15,
           ),
         ),

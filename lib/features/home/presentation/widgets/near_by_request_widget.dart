@@ -40,7 +40,7 @@ class NearByRequestWidget extends ConsumerWidget {
           } else if (snapshot.hasData) {
             return snapshot.data!;
           } else {
-            return Center(child: Text('No widget returned.'));
+            return Center(child: Text('No request near you.'));
           }
         },
       ),

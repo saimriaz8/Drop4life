@@ -54,7 +54,7 @@ class AIChatPage extends ConsumerWidget {
                             label: Text(q),
                             onPressed:
                                 () => AiChatPageController.askMistralAi(q, ref),
-                            backgroundColor: Colors.red.withOpacity(0.2),
+                            backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.red.withOpacity(0.2) : const Color(0xFFEF5350).withAlpha(100),
                           );
                         }).toList(),
                   ),
