@@ -23,8 +23,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     Future.microtask(() {
       final profilePageStateNotifier = ref.read(profilePageProvider.notifier);
-      profilePageStateNotifier.setDonationCount(data['donationCount'] ?? 0);
-      profilePageStateNotifier.setRequestCount(data['requestCount'] ?? 0);
+      profilePageStateNotifier.setDonationCount(
+        int.tryParse(data['donationCount']?.toString() ?? '') ?? 0,
+      );
+      profilePageStateNotifier.setRequestCount(
+        int.tryParse(data['requestCount']?.toString() ?? '') ?? 0,
+      );
     });
   }
 
@@ -242,6 +246,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                   ref
                                       .read(aiChatPageProvider.notifier)
                                       .resetChat();
+                                  ref
+                                      .read(profilePageProvider.notifier)
+                                      .resetState();
                                 },
                                 child: Text(
                                   'Log Out',
